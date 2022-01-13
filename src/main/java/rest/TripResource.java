@@ -54,6 +54,8 @@ public class TripResource {
         String location;
         long duration;
         List<String> packingList;
+        List<String> participantEmails;
+
         try {
             JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
             String dateTimeString = json.get("dateTime").getAsString();
@@ -84,9 +86,44 @@ public class TripResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("join/{id}/{email}")
+    public String joinTrip(@PathParam("id") long id, @PathParam("email") String email) {
+        TripDTO dto = tripFacade.joinTrip(id, email);
+        boolean bool = tripFacade.isParticipant(id, email);
+        return GSON.toJson(bool);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("leave/{id}/{email}")
+    public String leaveTrip(@PathParam("id") long id, @PathParam("email") String email) {
+        TripDTO dto = tripFacade.leaveTrip(id, email);
+        boolean bool = tripFacade.isParticipant(id, email);
+        return GSON.toJson(bool);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("isParticipant/{id}/{email}")
+    public String isParticipant(@PathParam("id") long id, @PathParam("email") String email) {
+        boolean bool = tripFacade.isParticipant(id, email);
+        return GSON.toJson(bool);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("get")
     public String getTrips() {
         List<TripDTO> dtos = tripFacade.getAll();
         return GSON.toJson(dtos);
+    }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("delete/{id}")
+    @RolesAllowed("admin")
+    public String deleteBook(@PathParam("id") long id) {
+        TripDTO dto = tripFacade.deleteById(id);
+        return GSON.toJson(dto);
     }
 }

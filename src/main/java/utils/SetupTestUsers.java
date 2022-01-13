@@ -13,7 +13,7 @@ public class SetupTestUsers {
 
         EntityManagerFactory emf = EMF_Creator.createEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
-        // change passwords
+
         User user = new User(
                 "user@gmail.com",
                 "user",

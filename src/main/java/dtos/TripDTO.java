@@ -20,6 +20,7 @@ public class TripDTO {
     private List<String> packingList;
 
     public TripDTO(Trip entity) {
+        this.id = entity.getId();
         this.dateTime = entity.getDateTime();
         this.name = entity.getName();
         this.location = entity.getLocation();

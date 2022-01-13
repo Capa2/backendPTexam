@@ -31,6 +31,10 @@ public class Trip {
     @Column(name = "packingList", nullable = false)
     private List<String> packingList;
 
+    @ElementCollection
+    @Column(name = "participantEmails", nullable = true)
+    private List<String> participantEmails;
+
     public Trip() {
     }
 
@@ -48,6 +52,18 @@ public class Trip {
         this.location = dto.getLocation();
         this.duration = dto.getDuration();
         this.packingList = dto.getPackingList();
+    }
+
+    public boolean isParticipant(String email) {
+        return participantEmails.contains(email);
+    }
+
+    public void joinTrip(String email) {
+            participantEmails.add(email);
+    }
+
+    public void leaveTrip(String email) {
+            participantEmails.remove(email);
     }
 
     public long getId() {
