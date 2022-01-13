@@ -2,7 +2,11 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import dtos.TripDTO;
+import errorhandling.API_Exception;
+import errorhandling.API_ExceptionMapper;
 import facades.TripFacade;
 import utils.EMF_Creator;
 
@@ -40,21 +44,32 @@ public class TripResource {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("add")
+    @Path("create")
     @RolesAllowed("admin")
-    public String addTrip(
-            @PathParam("dateTime") String dateTimeString,
-            @PathParam("name") String name,
-            @PathParam("location") String location,
-            @PathParam("duration") Long duration,
-            @PathParam("packingList") String packingList) {
+    public String createTrip(String jsonString) throws API_Exception {
+        LocalDateTime dateTime;
+        String name;
+        String location;
+        long duration;
+        List<String> packingList;
+        try {
+            JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
+            String dateTimeString = json.get("dateTime").getAsString();
+            name = json.get("name").getAsString();
+            location = json.get("location").getAsString();
+            duration = json.get("duration").getAsLong() * 60 * 60;
+            String packingListString = json.get("packingList").getAsString();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            dateTime = LocalDateTime.parse(dateTimeString, formatter);
+            //dateTime = LocalDateTime.parse(dateTimeString);
+            packingList = Arrays.asList(packingListString.split(","));
+        } catch (Exception e) {
+            throw new API_Exception("Malformed JSON Supplied", 400, e);
+        }
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, formatter);
-        List<String> packingListArray = Arrays.asList(packingList.split(","));
-
-        TripDTO tripDTO = new TripDTO(dateTime, name, location, duration, packingListArray);
+        TripDTO tripDTO = new TripDTO(dateTime, name, location, duration, packingList);
         TripDTO resultDTO = tripFacade.create(tripDTO);
         return GSON.toJson(resultDTO);
     }
