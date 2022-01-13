@@ -1,7 +1,6 @@
 package facades;
 
 import dtos.UserDTO;
-import entities.LibraryItem;
 import entities.Role;
 import entities.User;
 import javax.persistence.EntityManager;
@@ -11,9 +10,7 @@ import javax.ws.rs.WebApplicationException;
 import security.errorhandling.AuthenticationException;
 import utils.EMF_Creator;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class UserFacade {
 
@@ -72,7 +69,6 @@ public class UserFacade {
 
     public static void main(String[] args) {
         EntityManagerFactory emf = EMF_Creator.createEntityManagerFactory();
-        UserFacade uf = UserFacade.getUserFacade(emf);
         EntityManager em = emf.createEntityManager();
         Role role = em.find(Role.class, "user");
         System.out.println(role.getUserList());
