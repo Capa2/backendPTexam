@@ -1,6 +1,5 @@
 package rest;
 
-import dtos.LibraryItemDTO;
 import entities.LibraryItem;
 import entities.Role;
 import entities.User;

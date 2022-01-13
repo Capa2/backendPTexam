@@ -1,9 +1,6 @@
 package deserializer;
 
 import com.google.gson.*;
-import dtos.AuthorDTO;
-import dtos.BookDTO;
-import dtos.SubjectDTO;
 import facades.SearchFacade;
 import utils.JsonUtils;
 

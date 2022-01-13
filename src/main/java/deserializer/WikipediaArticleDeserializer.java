@@ -1,7 +1,6 @@
 package deserializer;
 
 import com.google.gson.*;
-import dtos.WikipediaArticleDTO;
 
 import java.lang.reflect.Type;
 

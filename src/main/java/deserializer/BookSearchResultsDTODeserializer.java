@@ -1,8 +1,6 @@
 package deserializer;
 
 import com.google.gson.*;
-import dtos.BookDTO;
-import dtos.BookSearchResultsDTO;
 import utils.JsonUtils;
 
 import java.lang.reflect.Type;

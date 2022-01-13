@@ -1,6 +1,5 @@
 package facades;
 
-import dtos.LibraryItemDTO;
 import entities.LibraryItem;
 import entities.User;
 import org.junit.jupiter.api.AfterEach;

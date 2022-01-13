@@ -1,8 +1,5 @@
 package facades;
 
-import dtos.LibraryDTO;
-import dtos.LibraryItemDTO;
-import dtos.LibraryItemWithBookDTO;
 import dtos.UserDTO;
 import entities.LibraryItem;
 import entities.Role;
@@ -18,9 +15,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-/**
- * @author lam@cphbusiness.dk
- */
 public class UserFacade {
 
     private static EntityManagerFactory emf;
@@ -70,118 +64,6 @@ public class UserFacade {
             em.persist(user);
             em.getTransaction().commit();
             return new UserDTO(user);
-        }
-        finally {
-            em.close();
-        }
-    }
-
-    public LibraryItemDTO addBook(String username, LibraryItemDTO itemDTO) throws IOException {
-        SearchFacade sf = SearchFacade.getSearchFacade();
-        if (!sf.bookExists(itemDTO.getBookKey())) {
-            throw new WebApplicationException("Book not found with this ID", 404);
-        }
-        EntityManager em = emf.createEntityManager();
-        User user = em.find(User.class, username);
-        LibraryItem item = new LibraryItem(itemDTO);
-        LibraryItem existing = null;
-        for (LibraryItem li : user.getLibraryItems()) {
-            if (li.getBookKey().equals(itemDTO.getBookKey())) {
-                existing = li;
-                break;
-            }
-        }
-        if (existing != null) {
-            throw new WebApplicationException("Item already in library", 409);
-        }
-        user.addToLibrary(item);
-        try {
-            em.getTransaction().begin();
-            em.merge(user);
-            em.getTransaction().commit();
-            return new LibraryItemDTO(item);
-        }
-        finally {
-            em.close();
-        }
-    }
-
-    public LibraryItemDTO getBook(String username, String key) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            User user = em.find(User.class, username);
-            LibraryItem item = null;
-            for (LibraryItem li : user.getLibraryItems()) {
-                if (li.getBookKey().equals(key)) {
-                    item = li;
-                    break;
-                }
-            }
-            if (item == null) {
-                throw new WebApplicationException("Item not found in your library", 404);
-            }
-            return new LibraryItemDTO(item);
-        }
-        finally {
-            em.close();
-        }
-    }
-
-    public LibraryDTO getLibrary(String username) throws IOException, ExecutionException, InterruptedException {
-        SearchFacade sf = SearchFacade.getSearchFacade();
-        EntityManager em = emf.createEntityManager();
-        User user = em.find(User.class, username);
-        List<LibraryItemDTO> itemDTOS = LibraryItemDTO.getDTOs(user.getLibraryItems());
-        List<LibraryItemWithBookDTO> itemsWithBooks = sf.getLibraryItemsWithBooks(itemDTOS);
-        return new LibraryDTO(username, itemsWithBooks);
-    }
-
-    // would be easier if database was refactored
-    public LibraryItemDTO updateBook(String username, LibraryItemDTO itemDTO) {
-        EntityManager em = emf.createEntityManager();
-        User user = em.find(User.class, username);
-        LibraryItem newItem = new LibraryItem(itemDTO);
-        LibraryItem oldItem = null;
-        for (LibraryItem li : user.getLibraryItems()) {
-            if (li.getBookKey().equals(itemDTO.getBookKey())) {
-                oldItem = li;
-                break;
-            }
-        }
-        if (oldItem == null) {
-            throw new WebApplicationException("Item not found in your library", 404);
-        }
-        newItem.setId(oldItem.getId());
-        try {
-            em.getTransaction().begin();
-            em.merge(newItem);
-            em.getTransaction().commit();
-            return new LibraryItemDTO(newItem);
-        }
-        finally {
-            em.close();
-        }
-    }
-
-    // this will be easier when I refactor the database
-    public LibraryItemDTO deleteBook(String username, String key) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            User user = em.find(User.class, username);
-            LibraryItem item = null;
-            for (LibraryItem li : user.getLibraryItems()) {
-                if (li.getBookKey().equals(key)) {
-                    item = li;
-                    break;
-                }
-            }
-            if (item == null) {
-                throw new WebApplicationException("Item not found in your library", 404);
-            }
-            em.getTransaction().begin();
-            user.removeFromLibrary(item);
-            em.getTransaction().commit();
-            return new LibraryItemDTO(item);
         }
         finally {
             em.close();

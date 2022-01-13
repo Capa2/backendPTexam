@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import deserializer.WikipediaArticleDeserializer;
 import dtos.funstuff.DadJokeDTO;
-import dtos.WikipediaArticleDTO;
 import entities.User;
 
 import java.io.IOException;
