@@ -11,21 +11,27 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import facades.UserFacade;
+
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import entities.User;
 import errorhandling.API_Exception;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import security.errorhandling.AuthenticationException;
 import errorhandling.GenericExceptionMapper;
+
 import javax.persistence.EntityManagerFactory;
+
 import utils.EMF_Creator;
 
 @Path("login")
@@ -39,22 +45,35 @@ public class LoginEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(String jsonString) throws AuthenticationException, API_Exception {
-        String username;
+        String email;
         String password;
         try {
             JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
-            username = json.get("username").getAsString();
+            email = json.get("email").getAsString();
             password = json.get("password").getAsString();
         } catch (Exception e) {
-           throw new API_Exception("Malformed JSON Supplied",400,e);
+            throw new API_Exception("Malformed JSON Supplied", 400, e);
         }
 
         try {
-            User user = USER_FACADE.getVerifiedUser(username, password);
-            String token = createToken(username, user.getRolesAsStrings());
+            User user = USER_FACADE.getVerifiedUser(email, password);
+            String token = createToken(
+                    email,
+                    user.getRolesAsStrings(),
+                    user.getName(),
+                    user.getAddress(),
+                    user.getPhone(),
+                    user.getBirthYear(),
+                    user.getGender()
+            );
             JsonObject responseJson = new JsonObject();
-            responseJson.addProperty("username", username);
+            responseJson.addProperty("email", email);
             responseJson.addProperty("token", token);
+            /*responseJson.addProperty("name", user.getName());
+            responseJson.addProperty("address", user.getAddress());
+            responseJson.addProperty("phone", user.getPhone());
+            responseJson.addProperty("birthYear", user.getBirthYear());
+            responseJson.addProperty("gender", user.getGender());*/
             return Response.ok(new Gson().toJson(responseJson)).build();
 
         } catch (JOSEException | AuthenticationException ex) {
@@ -63,10 +82,18 @@ public class LoginEndpoint {
             }
             Logger.getLogger(GenericExceptionMapper.class.getName()).log(Level.SEVERE, null, ex);
         }
-        throw new AuthenticationException("Invalid username or password! Please try again");
+        throw new AuthenticationException("Invalid email or password! Please try again");
     }
 
-    private String createToken(String userName, List<String> roles) throws JOSEException {
+    private String createToken(
+            String email,
+            List<String> roles,
+            String name,
+            String address,
+            String phone,
+            int birthYear,
+            String gender
+    ) throws JOSEException {
 
         StringBuilder res = new StringBuilder();
         for (String string : roles) {
@@ -74,14 +101,19 @@ public class LoginEndpoint {
             res.append(",");
         }
         String rolesAsString = res.length() > 0 ? res.substring(0, res.length() - 1) : "";
-        String issuer = "semesterstartcode-dat3";
+        String issuer = "karpantschof.com";
 
         JWSSigner signer = new MACSigner(SharedSecret.getSharedKey());
         Date date = new Date();
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(userName)
-                .claim("username", userName)
+                .subject(email)
+                .claim("email", email)
                 .claim("roles", rolesAsString)
+                .claim("name", name)
+                .claim("address", address)
+                .claim("phone", phone)
+                .claim("birthYear", birthYear)
+                .claim("gender", gender)
                 .claim("issuer", issuer)
                 .issueTime(date)
                 .expirationTime(new Date(date.getTime() + TOKEN_EXPIRE_TIME))

@@ -7,7 +7,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import dtos.RoleDTO;
 import dtos.UserDTO;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -19,14 +18,19 @@ public class User implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
+    @Column(name = "user_email", length = 64)
+    private String email;
+
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "user_name", length = 32)
-    private String userName;
+    private String name;
 
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
     @Column(name = "user_pass")
-    private String userPass;
+    private String password;
 
     @Basic(optional = false)
     @NotNull
@@ -40,11 +44,6 @@ public class User implements Serializable {
 
     @Basic(optional = false)
     @NotNull
-    @Column(name = "user_email", length = 64)
-    private String email;
-
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "user_birthYear", length = 4)
     private int birthYear;
 
@@ -55,7 +54,7 @@ public class User implements Serializable {
 
 
     @JoinTable(name = "user_roles", joinColumns = {
-            @JoinColumn(name = "user_name", referencedColumnName = "user_name")}, inverseJoinColumns = {
+            @JoinColumn(name = "user_email", referencedColumnName = "user_email")}, inverseJoinColumns = {
             @JoinColumn(name = "role_name", referencedColumnName = "role_name")})
     @ManyToMany
     private List<Role> roleList = new ArrayList<>();
@@ -73,23 +72,28 @@ public class User implements Serializable {
     }
 
     public User(UserDTO dto) {
-        this.userName = dto.getUsername();
-        this.userPass = BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt());
+        this.email = dto.getEmail();
+        this.password = BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt());
+        this.name = dto.getName();
         this.address = dto.getAddress();
         this.phone = dto.getPhone();
-        this.email = dto.getEmail();
         this.birthYear = dto.getBirthYear();
         this.gender = dto.getGender();
     }
 
 
-    public User(String userName, String userPass, String address, String phone, String email, int birthYear,
+    public User(String email,
+                String password,
+                String name,
+                String address,
+                String phone,
+                int birthYear,
                 String gender) {
-        this.userName = userName;
-        this.userPass = BCrypt.hashpw(userPass, BCrypt.gensalt());
+        this.email = email;
+        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+        this.name = name;
         this.address = address;
         this.phone = phone;
-        this.email = email;
         this.birthYear = birthYear;
         this.gender = gender;
 
@@ -97,15 +101,15 @@ public class User implements Serializable {
     }
 
     public boolean verifyPassword(String pw) {
-        return BCrypt.checkpw(pw, userPass);
+        return BCrypt.checkpw(pw, password);
     }
 
-    public String getUserName() {
-        return userName;
+    public String getName() {
+        return name;
     }
 
-    public String getUserPass() {
-        return userPass;
+    public String getPassword() {
+        return password;
     }
 
     public String getAddress() {

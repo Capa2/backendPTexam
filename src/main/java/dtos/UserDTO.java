@@ -5,39 +5,46 @@ import entities.User;
 import java.util.List;
 
 public class UserDTO {
-    private String username;
+    private String email;
     private String password;
+    private String name;
     private String address;
     private String phone;
-    private String email;
     private int birthYear;
     private String gender;
     private List<RoleDTO> roles;
 
     public UserDTO(User entity) {
-        this.username = entity.getUserName();
-        this.password = entity.getUserPass();
+        this.email = entity.getEmail();
+        this.password = entity.getPassword();
+        this.name = entity.getName();
         this.address = entity.getAddress();
         this.phone = entity.getPhone();
-        this.email = entity.getEmail();
         this.birthYear = entity.getBirthYear();
         this.gender = entity.getGender();
         this.roles = RoleDTO.getDTOs(entity.getRoleList());
     }
 
-    public UserDTO(String username, String password, String address, String phone, String email, int birthYear, String gender, List<RoleDTO> roles) {
-        this.username = username;
+    public UserDTO(String email,
+                   String password,
+                   String name,
+                   String address,
+                   String phone,
+                   int birthYear,
+                   String gender,
+                   List<RoleDTO> roles) {
+        this.email = email;
+        this.name = name;
         this.password = password;
         this.address = address;
         this.phone = phone;
-        this.email = email;
         this.birthYear = birthYear;
         this.gender = gender;
         this.roles = roles;
     }
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
 
     public String getPassword() {

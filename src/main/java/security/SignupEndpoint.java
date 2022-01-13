@@ -24,26 +24,26 @@ public class SignupEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String signup(String jsonString) throws API_Exception {
-        String username;
+        String email;
         String password;
+        String name;
         String address;
         String phone;
-        String email;
         int birthYear;
         String gender;
         try {
             JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
-            username = json.get("username").getAsString();
+            email = json.get("email").getAsString();
             password = json.get("password").getAsString();
+            name = json.get("name").getAsString();
             address = json.get("address").getAsString();
             phone = json.get("phone").getAsString();
-            email = json.get("email").getAsString();
             birthYear = json.get("birthYear").getAsInt();
             gender = json.get("gender").getAsString();
         } catch (Exception e) {
             throw new API_Exception("Malformed JSON Supplied", 400, e);
         }
-        UserDTO user = USER_FACADE.signup(username, password, address, phone, email, birthYear, gender);
+        UserDTO user = USER_FACADE.signup(email, password, name, address, phone, birthYear, gender);
         return new Gson().toJson(user);
     }
 }

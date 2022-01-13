@@ -18,10 +18,22 @@ public class SetupTestUsersWithResponse {
             EntityManagerFactory emf = EMF_Creator.createEntityManagerFactory();
             EntityManager em = emf.createEntityManager();
             // change passwords
-            User user = new User("user", "user", "Guldbergsgade 33, 3. t.v. 2200 København, Danmark", "41029210",
-                    "techboi93@gmail.com", 1993, "male");
-            User admin = new User("admin", "admin", "Rolighedsvej 12, st. t.v. 2100 København, Danmark", "81820512",
-                    "mainguy4@gmail.com", 2001, "male");
+            User user = new User(
+                    "user@gmail.com",
+                    "user",
+                    "Alexendria Ivinalititavitch",
+                    "Guldbergsgade 33, 3. t.v. 2200, København, Danmark",
+                    "41029210",
+                    1999,
+                    "female");
+            User admin = new User(
+                    "admin@gmail.com",
+                    "admin",
+                    "Gregory Illinivich",
+                    "Rolighedsvej 12, st. t.v. 2100 København, Danmark",
+                    "81820512",
+                    1969,
+                    "male");
             //User both = new User("user_admin", "test3");
 
             em.getTransaction().begin();
@@ -37,7 +49,7 @@ public class SetupTestUsersWithResponse {
             em.persist(admin);
             //em.persist(both);
             em.getTransaction().commit();
-            System.out.println("PW: " + user.getUserPass());
+            System.out.println("PW: " + user.getPassword());
             System.out.println("Testing user with OK password: " + user.verifyPassword("user"));
             System.out.println("Testing user with wrong password: " + user.verifyPassword("wong"));
             System.out.println("Created TEST Users");

@@ -3,6 +3,7 @@ package facades;
 import dtos.UserDTO;
 import entities.Role;
 import entities.User;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.WebApplicationException;
@@ -21,7 +22,6 @@ public class UserFacade {
     }
 
     /**
-     *
      * @param _emf
      * @return the instance of this facade.
      */
@@ -33,11 +33,11 @@ public class UserFacade {
         return instance;
     }
 
-    public User getVerifiedUser(String username, String password) throws AuthenticationException {
+    public User getVerifiedUser(String email, String password) throws AuthenticationException {
         EntityManager em = emf.createEntityManager();
         User user;
         try {
-            user = em.find(User.class, username);
+            user = em.find(User.class, email);
             if (user == null || !user.verifyPassword(password)) {
                 throw new AuthenticationException("Invalid user name or password");
             }
@@ -47,14 +47,21 @@ public class UserFacade {
         return user;
     }
 
-    public UserDTO signup(String username, String password, String address, String phone, String email, int birthYear,
-                          String gender) {
+    public UserDTO signup(
+            String email,
+            String password,
+            String name,
+            String address,
+            String phone,
+            int birthYear,
+            String gender
+    ) {
         EntityManager em = emf.createEntityManager();
-        User user = em.find(User.class, username);
+        User user = em.find(User.class, email);
         if (user != null) {
-            throw new WebApplicationException("Username is already taken.", 409);
+            throw new WebApplicationException("Email is already taken.", 409);
         }
-        user = new User(username, password, address, phone, email, birthYear, gender);
+        user = new User(email, password, name, address, phone, birthYear, gender);
         Role role = new Role("user");   // this works, but I worry slightly that we don't get the actual role entity with "find"
         user.addRole(role);
         try {
@@ -62,8 +69,7 @@ public class UserFacade {
             em.persist(user);
             em.getTransaction().commit();
             return new UserDTO(user);
-        }
-        finally {
+        } finally {
             em.close();
         }
     }
@@ -73,8 +79,8 @@ public class UserFacade {
         EntityManager em = emf.createEntityManager();
         Role role = em.find(Role.class, "user");
         System.out.println(role.getUserList());
-        List<User> users =em.createQuery("SELECT r.userList FROM Role r WHERE r.roleName = 'user'", User.class).getResultList();
-        users.forEach(u -> System.out.println(u.getUserName()));
+        List<User> users = em.createQuery("SELECT r.userList FROM Role r WHERE r.roleName = 'user'", User.class).getResultList();
+        users.forEach(u -> System.out.println(u.getName()));
     }
 
 }
