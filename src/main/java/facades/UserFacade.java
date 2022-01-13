@@ -47,13 +47,14 @@ public class UserFacade {
         return user;
     }
 
-    public UserDTO signup(String username, String password) {
+    public UserDTO signup(String username, String password, String address, String phone, String email, int birthYear,
+                          String gender) {
         EntityManager em = emf.createEntityManager();
         User user = em.find(User.class, username);
         if (user != null) {
             throw new WebApplicationException("Username is already taken.", 409);
         }
-        user = new User(username, password);
+        user = new User(username, password, address, phone, email, birthYear, gender);
         Role role = new Role("user");   // this works, but I worry slightly that we don't get the actual role entity with "find"
         user.addRole(role);
         try {

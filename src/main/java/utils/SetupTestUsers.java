@@ -9,35 +9,33 @@ import javax.persistence.EntityManagerFactory;
 
 public class SetupTestUsers {
 
-  public static void main(String[] args) {
+    public static void main(String[] args) {
 
-    EntityManagerFactory emf = EMF_Creator.createEntityManagerFactory();
-    EntityManager em = emf.createEntityManager();
-    // change passwords
-    User user = new User("user", "test1");
-    User admin = new User("admin", "test2");
-    User both = new User("user_admin", "test3");
+        EntityManagerFactory emf = EMF_Creator.createEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        // change passwords
+        User user = new User("user", "user", "Guldbergsgade 33, 3. t.v. 2200 København, Danmark", "41029210",
+                "techboi93@gmail.com", 1993, "male");
+        User admin = new User("admin", "admin", "Rolighedsvej 12, st. t.v. 2100 København, Danmark", "81820512",
+                "mainguy4@gmail.com", 2001, "male");
+        //User both = new User("user_admin", "test3");
 
-    if(admin.getUserPass().equals("test")||user.getUserPass().equals("test")||both.getUserPass().equals("test"))
-      throw new UnsupportedOperationException("You have not changed the passwords");
-
-    em.getTransaction().begin();
-    Role userRole = new Role("user");
-    Role adminRole = new Role("admin");
-    user.addRole(userRole);
-    admin.addRole(adminRole);
-    both.addRole(userRole);
-    both.addRole(adminRole);
-    em.persist(userRole);
-    em.persist(adminRole);
-    em.persist(user);
-    em.persist(admin);
-    em.persist(both);
-    em.getTransaction().commit();
-    System.out.println("PW: " + user.getUserPass());
-    System.out.println("Testing user with OK password: " + user.verifyPassword("test"));
-    System.out.println("Testing user with wrong password: " + user.verifyPassword("test1"));
-    System.out.println("Created TEST Users");
-  }
-
+        em.getTransaction().begin();
+        Role userRole = new Role("user");
+        Role adminRole = new Role("admin");
+        user.addRole(userRole);
+        admin.addRole(adminRole);
+        //both.addRole(userRole);
+        //both.addRole(adminRole);
+        em.persist(userRole);
+        em.persist(adminRole);
+        em.persist(user);
+        em.persist(admin);
+        //em.persist(both);
+        em.getTransaction().commit();
+        System.out.println("PW: " + user.getUserPass());
+        System.out.println("Testing user with OK password: " + user.verifyPassword("user"));
+        System.out.println("Testing user with wrong password: " + user.verifyPassword("wong"));
+        System.out.println("Created TEST Users");
+    }
 }

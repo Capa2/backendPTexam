@@ -17,4 +17,8 @@ public class RoleDTO {
         entities.forEach(e -> dtos.add(new RoleDTO(e)));
         return dtos;
     }
+
+    public String getRoleName() {
+        return name;
+    }
 }

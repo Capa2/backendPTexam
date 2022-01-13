@@ -1,5 +1,7 @@
 package entities;
 
+import dtos.RoleDTO;
+
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -33,6 +35,10 @@ public class Role implements Serializable {
 
     public Role(String roleName) {
         this.roleName = roleName;
+    }
+
+    public Role(RoleDTO dto) {
+        this.roleName = dto.getRoleName();
     }
 
     public String getRoleName() {
