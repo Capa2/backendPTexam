@@ -88,8 +88,7 @@ public class TripFacadeTest {
             em.persist(user);
             em.persist(admin);
             em.getTransaction().commit();
-        }
-        finally {
+        } finally {
             em.close();
         }
     }
@@ -103,8 +102,7 @@ public class TripFacadeTest {
             em.createNativeQuery("DELETE FROM roles").executeUpdate();
             em.createNativeQuery("DELETE FROM users").executeUpdate();
             em.getTransaction().commit();
-        }
-        finally {
+        } finally {
             em.close();
         }
     }
@@ -128,6 +126,7 @@ public class TripFacadeTest {
         securityToken = null;
     }
 
+    @Disabled
     @Test
     void getAll() {
         login("user@gmail.com", "test");
